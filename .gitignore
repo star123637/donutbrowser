@@ -19,7 +19,8 @@
 /dist/
 
 # production
-/build
+build/
+__pycache__/
 
 # misc
 **/*.DS_Store

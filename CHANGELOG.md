@@ -1469,3 +1469,7 @@ Note: created manually due to CI issue
 - chore: better issue validation
 - chore: update flake.nix for v0.18.0 [skip ci] (#247)
 
+
+## Fork 部署记录
+
+- 2026-11-25：新增 Windows v0.36.0 源码部署记录，便于复现本机依赖和核对浏览器环境支持范围。
