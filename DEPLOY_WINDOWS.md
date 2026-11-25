@@ -82,11 +82,19 @@ Get-ChildItem .\src-tauri\target\release\bundle\nsis\*.exe | Get-FileHash -Algor
 
 本机完成了 Wayfern 的首次下载与解压。Donut 安装日志记录的版本为 `156.0.8078.86`，包内 `chrome.exe` 的 Windows 产品名为 Wayfern、产品版本为 `156.0.8078.80`。为避免在系统盘重复存放约 3.66 GB 引擎文件，发布版的同版本引擎目录使用 NTFS 硬链接，已逐文件检查 2,753 个链接。浏览器配置文件和站点存储独立于引擎目录。
 
+### v0.36.0 正式打包的阻塞
+
+`pnpm.exe tauri build --bundles nsis` 已编译和复制优化版 `donut-proxy.exe`。随后的 Next.js 构建在导出页面后以 `SecurityFatalError` 和退出码 1 结束，重试前端构建得到同一结果。Tauri 因前置命令失败而停止，本轮没有生成 NSIS 安装包。此前开发版启动和前端构建成功的记录仍对应其各自的命令。
+
+npm 公告接口在 2026-11-25 对锁定版本 Next.js 16.4.3 返回 7 条中等严重度公告，对同一补丁系列的 16.4.6 返回 0 条。这是对依赖版本的查询；各公告所涉及的服务端功能是否在这个静态导出的桌面应用中可达，需要另行评估。保留标签基线可以在 fork 的构建分支更新依赖锁并复测，另一个选择是使用上游已采用 Vite 的 `main` 源码。此次检查保留了原始依赖锁。[Next.js 官方安全公告示例](https://github.com/vercel/next.js/security/advisories/GHSA-f3mh-rxg3-f5g2)
+
 ## 浏览器环境的验收边界
 
 v0.36.0 创建和启动环境时只接受 Wayfern（Chromium）。Firefox 系的 Camoufox 在 v0.26.0 开始弃用，v0.28.0 完全弃用。当前标签无法创建所要求的 Firefox 环境。[创建环境的校验](https://github.com/donutbrowser/donutbrowser/blob/v0.36.0/src-tauri/src/api_server.rs#L1797-L1809) · [启动校验](https://github.com/donutbrowser/donutbrowser/blob/v0.36.0/src-tauri/src/browser_runner.rs#L1518) · [上游变更记录](https://github.com/donutbrowser/donutbrowser/blob/v0.36.0/CHANGELOG.md)
 
 本机验收改用用户选定的两个 Wayfern 环境。指纹对比要让两个环境分别访问同一个检测页，保存同一字段的结果。存储隔离需要单独验证：在同一来源中，让 A 写入一次性 cookie 和 localStorage 值，检查 B 的初始状态，再让 B 写入不同值并返回 A 复查。检测页的指纹哈希不同，本身不足以证明存储隔离。[CreepJS](https://abrahamjuliot.github.io/creepjs/) · [BrowserLeaks](https://browserleaks.com/)
+
+目前已截取开发版欢迎页。两个配置、检测网站截图和 cookie/localStorage 双向复查均待执行。
 
 ## 发布包核验和再分发
 
